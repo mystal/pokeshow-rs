@@ -1,3 +1,4 @@
+use std::io::{stdout, Write};
 use std::path::PathBuf;
 
 use anyhow::bail;
@@ -59,17 +60,20 @@ fn main() -> anyhow::Result<()> {
     }
 
     // Print pixels in bounding box.
-    // TODO: Grab the stdout buffer to print all at once.
-    for y in start.1..end.1 {
-        for x in start.0..end.0 {
-            let pixel = image.get_pixel(x, y);
-            if pixel[3] == 255 {
-                print!("{}", "  ".on_truecolor(pixel[0], pixel[1], pixel[2]));
-            } else {
-                print!("  ");
+    {
+        // Grab stdout to avoid grabbing the global lock for each write.
+        let mut stdout = stdout();
+        for y in start.1..end.1 {
+            for x in start.0..end.0 {
+                let pixel = image.get_pixel(x, y);
+                if pixel[3] == 255 {
+                    write!(stdout, "{}", "  ".on_truecolor(pixel[0], pixel[1], pixel[2]))?;
+                } else {
+                    write!(stdout, "  ")?;
+                }
             }
+            writeln!(stdout)?;
         }
-        println!();
     }
 
     Ok(())
