@@ -63,8 +63,8 @@ fn main() -> anyhow::Result<()> {
     {
         // Grab stdout to avoid grabbing the global lock for each write.
         let mut stdout = stdout();
-        for y in start.1..end.1 {
-            for x in start.0..end.0 {
+        for y in start.1..=end.1 {
+            for x in start.0..=end.0 {
                 let pixel = image.get_pixel(x, y);
                 if pixel[3] == 255 {
                     write!(stdout, "{}", "  ".on_truecolor(pixel[0], pixel[1], pixel[2]))?;
